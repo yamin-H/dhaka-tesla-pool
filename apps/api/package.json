@@ -5,7 +5,7 @@
   "description": "Dhaka Tesla Pool - Backend API",
   "main": "dist/index.js",
   "scripts": {
-    "dev": "nodemon --exec ts-node src/index.ts",
+    "dev": "nodemon --exec tsx src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
     "db:migrate": "prisma migrate dev",
@@ -13,6 +13,8 @@
     "test": "jest"
   },
   "dependencies": {
+    "@prisma/adapter-pg": "^7.10.0",
+    "@prisma/adapter-ppg": "^7.10.0",
     "@prisma/client": "^7.8.0",
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
@@ -37,6 +39,7 @@
     "ts-jest": "^29.0.0",
     "ts-node": "^10.9.0",
     "tsconfig-paths": "^4.0.0",
+    "tsx": "^4.23.15",
     "typescript": "^5.0.0"
   }
 }
