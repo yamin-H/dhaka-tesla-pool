@@ -43,7 +43,7 @@ export const createPool = async (driverId: string, input: CreatePoolInput) => {
 
         const currentVehicle = lockedVehicle[0];
         const availableSeats =
-            currentVehicle.capacity - currentVehicle.current_occupied_seats;
+            currentVehicle.capacity - (currentVehicle.currentOccupiedSeats ?? currentVehicle.current_occupied_seats ?? 0);
 
         if (totalSeatsNeeded > availableSeats) {
             throw new ApiError(
