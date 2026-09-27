@@ -11,3 +11,114 @@ generator client {
 datasource db {
     provider = "postgresql"
 }
+
+model User {
+    id           String        @id @default(uuid())
+    name         String
+    email        String        @unique
+    password     String
+    role         Role
+    createdAt    DateTime      @default(now())
+    vehicle      Vehicle?
+    rideRequests RideRequest[]
+    poolMembers  PoolMember[]
+
+    @@map("users")
+}
+
+model Vehicle {
+    id                   String        @id @default(uuid())
+    driverId             String        @unique
+    name                 String
+    capacity             Int
+    currentOccupiedSeats Int           @default(0)
+    status               VehicleStatus @default(OFFLINE)
+    createdAt            DateTime      @default(now())
+    driver               User          @relation(fields: [driverId], references: [id])
+    pools                Pool[]
+
+    @@map("vehicles")
+}
+
+model RideRequest {
+    id             String      @id @default(uuid())
+    passengerId    String
+    poolId         String?
+    pickupLocation String
+    destination    String
+    seatsRequested Int         @default(1)
+    status         RideStatus  @default(REQUESTED)
+    estimatedFare  Int
+    finalFare      Int?
+    createdAt      DateTime    @default(now())
+    updatedAt      DateTime    @updatedAt
+    passenger      User        @relation(fields: [passengerId], references: [id])
+    pool           Pool?       @relation(fields: [poolId], references: [id])
+    poolMember     PoolMember?
+
+    @@index([passengerId])
+    @@index([status])
+    @@index([poolId])
+    @@map("ride_requests")
+}
+
+model Pool {
+    id                 String        @id @default(uuid())
+    vehicleId          String
+    driverId           String
+    status             PoolStatus    @default(MATCHED)
+    totalSeatsOccupied Int           @default(0)
+    createdAt          DateTime      @default(now())
+    updatedAt          DateTime      @updatedAt
+    vehicle            Vehicle       @relation(fields: [vehicleId], references: [id])
+    rideRequests       RideRequest[]
+    poolMembers        PoolMember[]
+
+    @@index([vehicleId])
+    @@index([status])
+    @@map("pools")
+}
+
+model PoolMember {
+    id          String      @id @default(uuid())
+    poolId      String
+    passengerId String
+    rideId      String      @unique
+    fare        Int
+    joinedAt    DateTime    @default(now())
+    pool        Pool        @relation(fields: [poolId], references: [id])
+    passenger   User        @relation(fields: [passengerId], references: [id])
+    ride        RideRequest @relation(fields: [rideId], references: [id])
+
+    @@index([poolId])
+    @@index([passengerId])
+    @@map("pool_members")
+}
+
+enum Role {
+    PASSENGER
+    DRIVER
+}
+
+enum VehicleStatus {
+    ONLINE
+    OFFLINE
+    IN_RIDE
+}
+
+enum RideStatus {
+    REQUESTED
+    MATCHED
+    DRIVER_ARRIVED
+    STARTED
+    COMPLETED
+    CANCELLED
+}
+
+enum PoolStatus {
+    MATCHED
+    DRIVER_ARRIVED
+    STARTED
+    COMPLETED
+    CANCELLED
+}
