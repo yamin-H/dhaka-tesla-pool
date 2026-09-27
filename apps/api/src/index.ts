@@ -8,6 +8,7 @@ import vehicleRoutes from "./modules/vehicles/vehicles.routes.js"
 import { errorHandler } from './middleware/error.middleware.js';
 import fareRoutes from './modules/fares/fares.routes.js';
 import rideRoutes from './modules/rides/rides.routes.js';
+import poolRoutes from './modules/pools/pools.routes.js';
 
 dotenv.config();
 
@@ -22,6 +23,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/vehicles', vehicleRoutes);
 app.use('/api/fares', fareRoutes);
 app.use('/api/rides', rideRoutes);
+app.use('/api/pools', poolRoutes);
 
 // Health check
 app.get('/health', (req, res) => {
