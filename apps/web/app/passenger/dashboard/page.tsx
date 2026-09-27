@@ -45,8 +45,10 @@ export default function PassengerDashboard() {
         try {
             const res = await api.get('/rides/my');
             setRides(res.data.data);
-        } catch {
-            // silent
+        } catch(error: any) {
+            if (error.response?.status !== 403) {
+                
+            }
         } finally {
             setLoadingRides(false);
         }
@@ -63,16 +65,25 @@ export default function PassengerDashboard() {
     };
 
     useEffect(() => {
-        if (!loading && !user) {
-            router.push('/login');
-            return;
+        if (loading) return;
+        if (!user) {
+            router.push('/login')
+            return
         }
-        if (!loading && user?.role !== 'PASSENGER') {
+
+        if (user?.role !== 'PASSENGER') {
             router.push('/driver/dashboard');
-            return;
+            return
         }
+
         fetchRides();
-    }, [user, loading]);
+
+        const interval = setInterval(() => {
+            fetchRides()
+        }, 5000);
+
+        return () => clearInterval(interval);
+    }, [loading, user]);
 
     const onSubmit = async (data: RideInput) => {
         setSubmitting(true);
