@@ -6,6 +6,7 @@ import { env } from './config/env.js';
 import authRoutes from "./modules/auth/auth.routes.js";
 import vehicleRoutes from "./modules/vehicles/vehicles.routes.js"
 import { errorHandler } from './middleware/error.middleware.js';
+import fareRoutes from './modules/fares/fares.routes.js';
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ app.use(express.json());
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/vehicles', vehicleRoutes);
+app.use('/api/fares', fareRoutes);
 
 // Health check
 app.get('/health', (req, res) => {
