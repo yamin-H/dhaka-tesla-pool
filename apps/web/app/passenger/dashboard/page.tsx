@@ -46,13 +46,14 @@ export default function PassengerDashboard() {
         try {
             const res = await api.get('/rides/my');
             setRides(res.data.data);
-            const active = res.data.data.find((r: RideRequest) => ['MATCHED', 'DRIVER_ARRIVED', 'STARTED', 'COMPLETED'].includes(r.status));
+            const active = res.data.data.find((r: RideRequest) => ['REQUESTED', 'MATCHED', 'DRIVER_ARRIVED', 'STARTED', 'COMPLETED'].includes(r.status));
             if (active) {
                 const statusMessages: Record<string, string> = {
                     REQUESTED: '🔍 Searching for a driver...',
                     MATCHED: '🛺 Driver accepted your ride!',
                     DRIVER_ARRIVED: '📍 Your driver has arrived!',
                     STARTED: '🚀 Your ride is in progress!',
+                    COMPLETED: '✅ Ride completed! Thank you for riding with us.'
                 }
 
                 setFeedback({
