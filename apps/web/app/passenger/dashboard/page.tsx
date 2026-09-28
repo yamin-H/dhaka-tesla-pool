@@ -13,6 +13,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { formatFare, formatDate, getRideStatusColor } from '@/lib/utils';
 import { RideRequest, FareEstimate } from '@/types';
 import api from '@/lib/api';
+import { useCallback } from 'react';
 
 const ZONES = [
   'Banani', 'Gulshan', 'Mohakhali', 'Dhanmondi',
@@ -41,18 +42,16 @@ export default function PassengerDashboard() {
         defaultValues: { pickupLocation: '', destination: '', seatsRequested: 1 },
     });
 
-    const fetchRides = async () => {
+    const fetchRides = useCallback(async () => {
         try {
             const res = await api.get('/rides/my');
             setRides(res.data.data);
-        } catch(error: any) {
-            if (error.response?.status !== 403) {
-                
-            }
+        } catch {
+            // silent
         } finally {
             setLoadingRides(false);
         }
-    };
+    }, []);
 
     const fetchFareEstimate = async (pickup: string, destination: string) => {
         if (!pickup || !destination) return;
@@ -78,15 +77,12 @@ export default function PassengerDashboard() {
 
         fetchRides();
 
-    }, [loading, user]);
+    }, [loading, user, fetchRides]);
 
     useEffect(() => {
-        const interval = setInterval(() => {
-            fetchRides();
-        }, 5000);
-
+        const interval = setInterval(fetchRides, 5000);
         return () => clearInterval(interval);
-    }, []);
+    }, [fetchRides]);
 
     const onSubmit = async (data: RideInput) => {
         setSubmitting(true);
