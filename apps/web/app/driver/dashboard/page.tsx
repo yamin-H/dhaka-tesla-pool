@@ -9,6 +9,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { formatFare, formatDate, getRideStatusColor } from '@/lib/utils';
 import { RideRequest, Pool, Vehicle } from '@/types';
 import api from '@/lib/api';
+import { useCallback } from 'react';
 
 export default function DriverDashboard() {
     const router = useRouter();
@@ -20,7 +21,7 @@ export default function DriverDashboard() {
     const [loadingData, setLoadingData] = useState(true);
     const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         try {
             const [vehicleRes, availableRes, poolsRes] = await Promise.all([
                 api.get('/vehicles/mine'),
@@ -39,7 +40,7 @@ export default function DriverDashboard() {
         } finally {
             setLoadingData(false);
         }
-    };
+    }, []);
 
     useEffect(() => {
         if (!loading && !user) {
@@ -51,7 +52,12 @@ export default function DriverDashboard() {
             return;
         }
         fetchData();
-    }, [user, loading]);
+    }, [user, loading, fetchData]);
+
+    useEffect(() => {
+        const interval = setInterval(fetchData, 5000);
+        return () => clearInterval(interval);
+    }, [fetchData]);
 
     const toggleVehicleStatus = async () => {
         if (!vehicle) return;
