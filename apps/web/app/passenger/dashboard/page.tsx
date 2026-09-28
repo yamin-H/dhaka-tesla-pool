@@ -78,12 +78,15 @@ export default function PassengerDashboard() {
 
         fetchRides();
 
+    }, [loading, user]);
+
+    useEffect(() => {
         const interval = setInterval(() => {
-            fetchRides()
+            fetchRides();
         }, 5000);
 
         return () => clearInterval(interval);
-    }, [loading, user]);
+    }, []);
 
     const onSubmit = async (data: RideInput) => {
         setSubmitting(true);
