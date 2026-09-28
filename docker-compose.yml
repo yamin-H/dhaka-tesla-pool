@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+    ports:
+      - '4000:4000'
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@db:5432/dhaka_tesla_pool?sslmode=disable
+      - JWT_SECRET=${JWT_SECRET:-dhaka_tesla_pool_jwt_secret_dev}
+      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN:-7d}
+      - PORT=4000
+      - NODE_ENV=production
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'wget', '-qO-', 'http://localhost:4000/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  db:
+    image: postgres:15-alpine
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=dhaka_tesla_pool
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:

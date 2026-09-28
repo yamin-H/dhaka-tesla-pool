@@ -14,6 +14,9 @@ COPY . .
 RUN npx prisma generate
 RUN npm run build
 
+COPY start.sh ./start.sh
+RUN chmod +x ./start.sh
+
 EXPOSE 4000
 
-CMD ["npm", "run", "start"]
+CMD ["./start.sh"]
