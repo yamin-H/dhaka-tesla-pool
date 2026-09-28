@@ -4,15 +4,6 @@
     "module": "nodenext",
     "target": "esnext",
     "types": ["node"],
-<<<<<<< HEAD
-    // For nodejs:
-    // "lib": ["esnext"],
-    // "types": ["node"],
-    // and npm install -D @types/node
-
-    // Other Outputs
-=======
->>>>>>> master
     "sourceMap": true,
     "declaration": true,
     "declarationMap": true,
