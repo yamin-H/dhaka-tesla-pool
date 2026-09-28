@@ -417,5 +417,5 @@ npm test
 
 ## 🔗 Deployment
 
-- **Frontend:** [Vercel URL - to be added]
-- **Backend:** [Render URL - to be added]
+- **Frontend:** [https://dhaka-tesla-pool-nu.vercel.app](https://dhaka-tesla-pool-nu.vercel.app)
+- **Backend:** [https://dhaka-tesla-pool-wxns.onrender.com](https://dhaka-tesla-pool-wxns.onrender.com)

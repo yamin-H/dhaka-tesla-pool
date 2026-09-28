@@ -13,6 +13,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { formatFare, formatDate, getRideStatusColor } from '@/lib/utils';
 import { RideRequest, FareEstimate } from '@/types';
 import api from '@/lib/api';
+import { useCallback } from 'react';
 
 const ZONES = [
   'Banani', 'Gulshan', 'Mohakhali', 'Dhanmondi',
@@ -41,18 +42,33 @@ export default function PassengerDashboard() {
         defaultValues: { pickupLocation: '', destination: '', seatsRequested: 1 },
     });
 
-    const fetchRides = async () => {
+    const fetchRides = useCallback(async () => {
         try {
             const res = await api.get('/rides/my');
             setRides(res.data.data);
-        } catch(error: any) {
-            if (error.response?.status !== 403) {
-                
+            const active = res.data.data.find((r: RideRequest) => ['MATCHED', 'DRIVER_ARRIVED', 'STARTED', 'COMPLETED'].includes(r.status));
+            if (active) {
+                const statusMessages: Record<string, string> = {
+                    REQUESTED: '🔍 Searching for a driver...',
+                    MATCHED: '🛺 Driver accepted your ride!',
+                    DRIVER_ARRIVED: '📍 Your driver has arrived!',
+                    STARTED: '🚀 Your ride is in progress!',
+                }
+
+                setFeedback({
+                    type: "success",
+                    text : statusMessages[active.status]
+                })
             }
+            else {
+                setFeedback(null)
+            }
+        } catch {
+            // silent
         } finally {
             setLoadingRides(false);
         }
-    };
+    }, []);
 
     const fetchFareEstimate = async (pickup: string, destination: string) => {
         if (!pickup || !destination) return;
@@ -78,12 +94,12 @@ export default function PassengerDashboard() {
 
         fetchRides();
 
-        const interval = setInterval(() => {
-            fetchRides()
-        }, 5000);
+    }, [loading, user, fetchRides]);
 
+    useEffect(() => {
+        const interval = setInterval(fetchRides, 5000);
         return () => clearInterval(interval);
-    }, [loading, user]);
+    }, [fetchRides]);
 
     const onSubmit = async (data: RideInput) => {
         setSubmitting(true);
